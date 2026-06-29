@@ -45,13 +45,14 @@ const Settings = () => {
 
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       const { data } = await axios.put(
-        'http://localhost:5000/api/auth/profile',
+        `${API_URL}/auth/profile`,
         { name, profilePhoto },
         config
       );
       
-      updateUser(data);
+      updateProfile(data);
       setMessage({ text: 'Profile updated successfully!', type: 'success' });
     } catch (error) {
       setMessage({ text: error.response?.data?.message || 'Update failed', type: 'error' });

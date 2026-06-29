@@ -8,8 +8,9 @@ const TaskItem = ({ task, onEdit, onUpdate }) => {
 
   const toggleComplete = async () => {
     try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`http://localhost:5000/api/tasks/${task._id}`, {
+      await axios.put(`${API_URL}/tasks/${task._id}`, {
         completed: !task.completed
       }, config);
       onUpdate();
@@ -22,8 +23,9 @@ const TaskItem = ({ task, onEdit, onUpdate }) => {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
     
     try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`http://localhost:5000/api/tasks/${task._id}`, config);
+      await axios.delete(`${API_URL}/tasks/${task._id}`, config);
       onUpdate();
     } catch (error) {
       console.error('Error deleting task', error);

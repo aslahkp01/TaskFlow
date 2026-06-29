@@ -27,7 +27,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/login", {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const { data } = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
       });
@@ -44,7 +45,8 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/register", {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const { data } = await axios.post(`${API_URL}/auth/register`, {
         name,
         email,
         password,
@@ -75,7 +77,8 @@ export const AuthProvider = ({ children }) => {
       const config = {
         headers: { Authorization: `Bearer ${user.token}` }
       };
-      const { data } = await axios.put("http://localhost:5000/api/auth/profile", {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const { data } = await axios.put(`${API_URL}/auth/profile`, {
         name,
         onboarded,
         profilePhoto

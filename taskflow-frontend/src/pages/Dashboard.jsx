@@ -44,7 +44,8 @@ const Dashboard = () => {
   const fetchTasks = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`http://localhost:5000/api/tasks?search=${search}`, config);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const { data } = await axios.get(`${API_URL}/tasks?search=${search}`, config);
       setTasks(data);
     } catch (error) {
       console.error('Error fetching tasks', error);

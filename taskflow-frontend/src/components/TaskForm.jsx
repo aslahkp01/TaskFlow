@@ -35,10 +35,12 @@ const TaskForm = ({ task, onClose }) => {
 
       const taskData = { title, description, priority, dueDate: dueDate || undefined };
 
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
       if (task) {
-        await axios.put(`http://localhost:5000/api/tasks/${task._id}`, taskData, config);
+        await axios.put(`${API_URL}/tasks/${task._id}`, taskData, config);
       } else {
-        await axios.post('http://localhost:5000/api/tasks', taskData, config);
+        await axios.post(`${API_URL}/tasks`, taskData, config);
       }
       onClose();
     } catch (err) {
