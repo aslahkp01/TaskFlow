@@ -1,6 +1,7 @@
 # TaskFlow
 
-![TaskFlow Header](https://github.com/user-attachments/assets/66f875b5-14d5-4a02-88ae-d9151e668752)
+![TaskFlow Header](https://github.com/user-attachments/assets/bf0c00cc-9f79-4112-b52d-ac8c9a946638)
+)
 
 TaskFlow is a modern, responsive, and beautifully designed task management application built with the MERN stack. It acts as an extension of your mind, allowing you to capture, organize, and manage tasks instantly using a simple and flowing interface.
 
