@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Search, Inbox, Plus, Bell, PanelLeft, Settings as SettingsIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +8,7 @@ const Sidebar = ({ isMobile, isSidebarVisible, toggleSidebar, onAddTask, searchQ
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   if (!isMobile && !isSidebarVisible) {
     return null; // Or render a collapsed version
@@ -114,12 +116,7 @@ const Sidebar = ({ isMobile, isSidebarVisible, toggleSidebar, onAddTask, searchQ
             <span style={{ color: window.location.pathname === '/settings' ? 'var(--accent-color)' : 'var(--text-primary)' }}>Settings</span>
           </button>
           
-         <button onClick={() => {
-           if (window.confirm("Are you sure you want to log out?")) {
-             dispatch(logout());
-             navigate('/login');
-           }
-         }} style={{ 
+         <button onClick={() => setShowLogoutConfirm(true)} style={{ 
            display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0.75rem', 
            borderRadius: '8px', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--danger-color)',
            background: 'transparent', border: 'none', width: '100%', textAlign: 'left'
@@ -127,6 +124,59 @@ const Sidebar = ({ isMobile, isSidebarVisible, toggleSidebar, onAddTask, searchQ
             <span>Log out</span>
           </button>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999,
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          <div style={{
+            background: 'var(--card-bg)',
+            padding: '2rem',
+            borderRadius: '16px',
+            boxShadow: 'var(--shadow-lg)',
+            border: '1px solid var(--border-color)',
+            maxWidth: '400px',
+            width: '90%',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '0.75rem' }}>Log Out</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+              Are you sure you want to log out of your account? You will need to sign in again to access your tasks.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button 
+                onClick={() => setShowLogoutConfirm(false)}
+                className="btn"
+                style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  setShowLogoutConfirm(false);
+                  dispatch(logout());
+                  navigate('/login');
+                }}
+                className="btn"
+                style={{ background: 'var(--danger-color)', color: 'white', flex: 1 }}
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
