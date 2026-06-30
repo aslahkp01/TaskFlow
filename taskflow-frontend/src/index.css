@@ -269,15 +269,4 @@ code {
   .task-item {
     padding: 0.75rem !important;
   }
-
-  /* Stack logo and text on mobile */
-  .nav-brand {
-    flex-direction: column !important;
-    gap: 0 !important;
-    align-items: center !important;
-    font-size: 1rem !important;
-  }
-  .nav-brand span {
-    font-size: 0.8rem;
-  }
 }
