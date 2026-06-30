@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleTheme } from '../store/authSlice';
 import { CheckCircle, Play, Star, ChevronRight, Zap, ShieldCheck, Circle } from 'lucide-react';
 import Logo from '../components/Logo';
 import '../index.css';
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const { theme } = useSelector((state) => state.auth);
 
   return (
     <div className="landing-page" style={{ overflowX: 'hidden' }}>
@@ -14,8 +18,19 @@ const Home = () => {
           <span>TaskFlow</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <Link to="/login" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: '500', transition: 'color 0.2s' }} className="nav-link">Log in</Link>
-          <Link to="/register" className="btn btn-primary" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px' }}>
+          <button 
+            style={{ 
+              background: 'transparent', border: 'none', cursor: 'pointer', 
+              color: 'var(--text-secondary)', fontSize: '1.25rem', display: 'flex', alignItems: 'center',
+              padding: '0.5rem', borderRadius: '50%', transition: 'background-color 0.2s'
+            }} 
+            onClick={() => dispatch(toggleTheme())}
+            title="Toggle theme"
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+          <Link to="/login" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: '500', transition: 'color 0.2s', whiteSpace: 'nowrap' }} className="nav-link">Log in</Link>
+          <Link to="/register" className="btn btn-primary" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', whiteSpace: 'nowrap' }}>
             Start for free
           </Link>
         </div>

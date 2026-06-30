@@ -74,6 +74,34 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
+export const exportData = createAsyncThunk(
+  'auth/exportData',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { auth: { user } } = getState();
+      const config = { headers: { Authorization: `Bearer ${user.token}` } };
+      const { data } = await axios.get(`${API_URL}/auth/export`, config);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Export failed');
+    }
+  }
+);
+
+export const deleteAccount = createAsyncThunk(
+  'auth/deleteAccount',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { auth: { user } } = getState();
+      const config = { headers: { Authorization: `Bearer ${user.token}` } };
+      const { data } = await axios.delete(`${API_URL}/auth/profile`, config);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Delete account failed');
+    }
+  }
+);
+
 const getUserFromLocalStorage = () => {
   const userInfo = localStorage.getItem('userInfo');
   return userInfo ? JSON.parse(userInfo) : null;

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateProfile, toggleTheme } from '../store/authSlice';
+import { updateProfile, toggleTheme, exportData, deleteAccount, logout } from '../store/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Upload, Sun, Moon, Download, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
@@ -51,6 +51,43 @@ const Settings = () => {
       setMessage({ text: res.payload || 'Update failed', type: 'error' });
     }
     setLoading(false);
+  };
+
+  const handleExportData = async () => {
+    setLoading(true);
+    const res = await dispatch(exportData());
+    if (!res.error) {
+      const jsonStr = JSON.stringify(res.payload, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", url);
+      downloadAnchorNode.setAttribute("download", "taskflow_export.json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      URL.revokeObjectURL(url);
+      
+      setMessage({ text: 'Data exported successfully!', type: 'success' });
+    } else {
+      setMessage({ text: res.payload || 'Export failed', type: 'error' });
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm("Are you ABSOLUTELY sure you want to permanently delete your account? This action cannot be undone.")) {
+      setLoading(true);
+      const res = await dispatch(deleteAccount());
+      if (!res.error) {
+        dispatch(logout());
+        navigate('/login');
+      } else {
+        setMessage({ text: res.payload || 'Failed to delete account', type: 'error' });
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -195,7 +232,7 @@ const Settings = () => {
                   <h3 style={{ fontSize: '1rem', fontWeight: '500', color: 'var(--text-primary)' }}>Export Data</h3>
                   <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>Download a copy of all your tasks and account data.</p>
                 </div>
-                <button className="btn" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
+                <button onClick={handleExportData} disabled={loading} className="btn" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
                   <Download size={18} /> Export
                 </button>
               </div>
@@ -205,7 +242,7 @@ const Settings = () => {
                   <h3 style={{ fontSize: '1rem', fontWeight: '500', color: 'var(--danger-color)' }}>Delete Account</h3>
                   <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>Permanently delete your account and all data. This cannot be undone.</p>
                 </div>
-                <button className="btn" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger-color)' }}>
+                <button onClick={handleDeleteAccount} disabled={loading} className="btn" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger-color)' }}>
                   <Trash2 size={18} /> Delete Account
                 </button>
               </div>
