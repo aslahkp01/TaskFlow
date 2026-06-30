@@ -30,8 +30,8 @@ const Home = () => {
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            <Link to="/login" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: '500', transition: 'color 0.2s' }} className="nav-link">Log in</Link>
-            <Link to="/register" className="btn btn-primary" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px' }}>
+            <Link to="/login" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: '500', transition: 'color 0.2s', whiteSpace: 'nowrap' }} className="nav-link">Log in</Link>
+            <Link to="/register" className="btn btn-primary" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', whiteSpace: 'nowrap' }}>
               Start for free
             </Link>
           </div>
