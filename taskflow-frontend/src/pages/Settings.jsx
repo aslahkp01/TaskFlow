@@ -57,13 +57,18 @@ const Settings = () => {
     setLoading(true);
     const res = await dispatch(exportData());
     if (!res.error) {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res.payload, null, 2));
+      const jsonStr = JSON.stringify(res.payload, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
       const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("href", url);
       downloadAnchorNode.setAttribute("download", "taskflow_export.json");
       document.body.appendChild(downloadAnchorNode);
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
+      URL.revokeObjectURL(url);
+      
       setMessage({ text: 'Data exported successfully!', type: 'success' });
     } else {
       setMessage({ text: res.payload || 'Export failed', type: 'error' });
