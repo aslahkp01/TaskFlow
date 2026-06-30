@@ -13,7 +13,7 @@ const Home = () => {
     <div className="landing-page" style={{ overflowX: 'hidden' }}>
       {/* Navbar */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+        <div className="nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
           <Logo size={32} color="var(--accent-color)" />
           <span>TaskFlow</span>
         </div>
