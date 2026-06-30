@@ -1,12 +1,13 @@
-import { useState, useContext, useRef } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateProfile, toggleTheme } from '../store/authSlice';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { ArrowLeft, Upload, Sun, Moon, Download, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 
 const Settings = () => {
-  const { user, updateProfile, theme, toggleTheme } = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { user, theme, loading: authLoading } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   
@@ -19,7 +20,7 @@ const Settings = () => {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
 
   const handleThemeToggle = () => {
-    toggleTheme();
+    dispatch(toggleTheme());
   };
 
   const handlePhotoUpload = (e) => {
@@ -43,22 +44,13 @@ const Settings = () => {
     setLoading(true);
     setMessage({ text: '', type: '' });
 
-    try {
-      const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      const { data } = await axios.put(
-        `${API_URL}/auth/profile`,
-        { name, profilePhoto },
-        config
-      );
-      
-      updateProfile(data);
+    const res = await dispatch(updateProfile({ name, profilePhoto }));
+    if (!res.error) {
       setMessage({ text: 'Profile updated successfully!', type: 'success' });
-    } catch (error) {
-      setMessage({ text: error.response?.data?.message || 'Update failed', type: 'error' });
-    } finally {
-      setLoading(false);
+    } else {
+      setMessage({ text: res.payload || 'Update failed', type: 'error' });
     }
+    setLoading(false);
   };
 
   return (
@@ -184,7 +176,7 @@ const Settings = () => {
               </div>
               
               <button 
-                onClick={toggleTheme} 
+                onClick={handleThemeToggle} 
                 className="btn" 
                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
               >

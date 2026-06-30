@@ -1,24 +1,19 @@
 import { Link } from 'react-router-dom';
-import { CheckCircle, Play, Star, ChevronRight, LayoutList, Zap, ShieldCheck, Circle } from 'lucide-react';
-import { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { CheckCircle, Play, Star, ChevronRight, Zap, ShieldCheck, Circle } from 'lucide-react';
+import Logo from '../components/Logo';
 import '../index.css';
 
 const Home = () => {
-  const { theme, toggleTheme } = useContext(AuthContext);
 
   return (
     <div className="landing-page" style={{ overflowX: 'hidden' }}>
       {/* Navbar */}
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 5%', maxWidth: '1400px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--accent-color)' }}>
-          <LayoutList size={32} />
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+          <Logo size={32} color="var(--accent-color)" />
           <span>TaskFlow</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '1.25rem', display: 'flex', alignItems: 'center' }} onClick={toggleTheme}>
-            {theme === 'light' ? '🌙' : '☀️'}
-          </button>
           <Link to="/login" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: '500', transition: 'color 0.2s' }} className="nav-link">Log in</Link>
           <Link to="/register" className="btn btn-primary" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px' }}>
             Start for free
@@ -140,10 +135,14 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <footer style={{ padding: '3rem 5%', background: 'var(--bg-primary)', borderTop: '1px solid var(--border-color)', textAlign: 'center' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', color: 'var(--text-primary)' }}>
-          <LayoutList size={24} color="var(--accent-color)" />
-          <span>TaskFlow</span>
+      <footer style={{ background: 'var(--bg-secondary)', padding: '4rem 2rem', borderTop: '1px solid var(--border-color)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', md: 'row', justifyContent: 'space-between', gap: '2rem' }}>
+          <div style={{ maxWidth: '300px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '1rem' }}>
+              <Logo size={24} color="var(--accent-color)" />
+              <span>TaskFlow</span>
+            </div>
+          </div>
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
           © {new Date().getFullYear()} TaskFlow Inc. All rights reserved.

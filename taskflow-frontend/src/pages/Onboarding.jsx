@@ -1,16 +1,21 @@
-import { useState, useContext, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import { LayoutList, CheckCircle, ChevronRight, Check } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateProfile } from '../store/authSlice';
+import { CheckCircle, ChevronRight, Check } from 'lucide-react';
+import Logo from '../components/Logo';
 import '../index.css';
 
 const Onboarding = () => {
-  const { user, updateProfile } = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [name, setName] = useState('');
   const [profilePhoto, setProfilePhoto] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedFinish, setSelectedFinish] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -26,10 +31,25 @@ const Onboarding = () => {
     if (step < 3) setStep(step + 1);
   };
 
+  const handleOptionClick = (idx) => {
+    setSelectedOption(idx);
+    setTimeout(() => {
+      setSelectedOption(null);
+      handleNext();
+    }, 300);
+  };
+
+  const handleFinishClick = (idx) => {
+    setSelectedFinish(idx);
+    setTimeout(() => {
+      handleFinish();
+    }, 400);
+  };
+
   const handleFinish = async () => {
     setLoading(true);
-    const res = await updateProfile(name, true, profilePhoto);
-    if (res.success) {
+    const res = await dispatch(updateProfile({ name, onboarded: true, profilePhoto }));
+    if (!res.error) {
       navigate('/dashboard');
     }
     setLoading(false);
@@ -62,9 +82,9 @@ const Onboarding = () => {
         maxWidth: '600px',
         margin: '0 auto'
       }}>
-        <div style={{ marginBottom: '3rem' }}>
+        <div style={{ padding: '2rem' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--accent-color)' }}>
-            <LayoutList size={28} />
+            <Logo size={28} color="currentColor" />
             <span>TaskFlow</span>
           </div>
         </div>
@@ -130,16 +150,31 @@ const Onboarding = () => {
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
                 {['I write them on paper', 'I use a different task app', 'I create events in calendar', 'I try to remember them'].map((opt, idx) => (
-                  <button key={idx} onClick={handleNext} style={{ 
+                  <button key={idx} onClick={() => handleOptionClick(idx)} style={{ 
                     display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', 
-                    background: 'transparent', border: '1px solid var(--border-color)', 
+                    background: selectedOption === idx ? 'var(--accent-color)' : 'transparent', 
+                    border: '1px solid var(--border-color)', 
+                    borderColor: selectedOption === idx ? 'var(--accent-color)' : 'var(--border-color)',
                     borderRadius: '8px', textAlign: 'left', cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    transform: selectedOption === idx ? 'scale(0.98) translateX(10px)' : 'scale(1) translateX(0)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                   }} className="onboard-option">
-                    <span style={{ width: '24px', height: '24px', borderRadius: '50%', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                      {String.fromCharCode(65 + idx)}
+                    <span style={{ 
+                      width: '24px', height: '24px', borderRadius: '50%', 
+                      border: selectedOption === idx ? 'none' : '1px solid var(--border-color)', 
+                      background: selectedOption === idx ? 'rgba(255,255,255,0.2)' : 'transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                      fontSize: '0.75rem', 
+                      color: selectedOption === idx ? 'white' : 'var(--text-secondary)',
+                      transition: 'all 0.3s'
+                    }}>
+                      {selectedOption === idx ? <Check size={14} color="white" /> : String.fromCharCode(65 + idx)}
                     </span>
-                    <span style={{ fontWeight: '500', color: 'var(--text-primary)' }}>{opt}</span>
+                    <span style={{ 
+                      fontWeight: '500', 
+                      color: selectedOption === idx ? 'white' : 'var(--text-primary)',
+                      transition: 'color 0.3s'
+                    }}>{opt}</span>
                   </button>
                 ))}
               </div>
@@ -154,31 +189,67 @@ const Onboarding = () => {
               <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Select one to get started.</p>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-                <button onClick={handleFinish} disabled={loading} style={{ 
+                <button onClick={() => handleFinishClick(0)} disabled={loading} style={{ 
                   display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.5rem', 
-                  background: 'transparent', border: '1px solid var(--border-color)', 
-                  borderRadius: '12px', textAlign: 'left', cursor: 'pointer'
+                  background: selectedFinish === 0 ? 'var(--accent-color)' : 'transparent', 
+                  border: '1px solid var(--border-color)', 
+                  borderColor: selectedFinish === 0 ? 'var(--accent-color)' : 'var(--border-color)',
+                  borderRadius: '12px', textAlign: 'left', cursor: 'pointer',
+                  transform: selectedFinish === 0 ? 'scale(0.98)' : 'scale(1)',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
                 }} className="onboard-option">
-                  <div style={{ width: '48px', height: '48px', background: 'rgba(54, 179, 126, 0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--success-color)' }}>
+                  <div style={{ 
+                    width: '48px', height: '48px', 
+                    background: selectedFinish === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(54, 179, 126, 0.1)', 
+                    borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    color: selectedFinish === 0 ? 'white' : 'var(--success-color)',
+                    transition: 'all 0.4s'
+                  }}>
                     <CheckCircle />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.25rem', color: 'var(--text-primary)' }}>For myself</h3>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>I want a personal space to organize my work and life.</p>
+                    <h3 style={{ 
+                      fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.25rem', 
+                      color: selectedFinish === 0 ? 'white' : 'var(--text-primary)',
+                      transition: 'color 0.4s'
+                    }}>For myself</h3>
+                    <p style={{ 
+                      fontSize: '0.875rem', 
+                      color: selectedFinish === 0 ? 'rgba(255,255,255,0.8)' : 'var(--text-secondary)',
+                      transition: 'color 0.4s'
+                    }}>I want a personal space to organize my work and life.</p>
                   </div>
                 </button>
                 
-                <button onClick={handleFinish} disabled={loading} style={{ 
+                <button onClick={() => handleFinishClick(1)} disabled={loading} style={{ 
                   display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.5rem', 
-                  background: 'transparent', border: '1px solid var(--border-color)', 
-                  borderRadius: '12px', textAlign: 'left', cursor: 'pointer'
+                  background: selectedFinish === 1 ? 'var(--accent-color)' : 'transparent', 
+                  border: '1px solid var(--border-color)', 
+                  borderColor: selectedFinish === 1 ? 'var(--accent-color)' : 'var(--border-color)',
+                  borderRadius: '12px', textAlign: 'left', cursor: 'pointer',
+                  transform: selectedFinish === 1 ? 'scale(0.98)' : 'scale(1)',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
                 }} className="onboard-option">
-                  <div style={{ width: '48px', height: '48px', background: 'rgba(0, 82, 204, 0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-color)' }}>
-                    <LayoutList />
+                  <div style={{ 
+                    width: '48px', height: '48px', 
+                    background: selectedFinish === 1 ? 'rgba(255,255,255,0.2)' : 'rgba(0, 82, 204, 0.1)', 
+                    borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    color: selectedFinish === 1 ? 'white' : 'var(--accent-color)',
+                    transition: 'all 0.4s'
+                  }}>
+                    <Logo size={24} color="currentColor" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.25rem', color: 'var(--text-primary)' }}>With my team</h3>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>I want a powerful home for my team's work.</p>
+                    <h3 style={{ 
+                      fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.25rem', 
+                      color: selectedFinish === 1 ? 'white' : 'var(--text-primary)',
+                      transition: 'color 0.4s'
+                    }}>With my team</h3>
+                    <p style={{ 
+                      fontSize: '0.875rem', 
+                      color: selectedFinish === 1 ? 'rgba(255,255,255,0.8)' : 'var(--text-secondary)',
+                      transition: 'color 0.4s'
+                    }}>I want a powerful home for my team's work.</p>
                   </div>
                 </button>
               </div>
