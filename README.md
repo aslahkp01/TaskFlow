@@ -28,10 +28,14 @@ TaskFlow is a modern, responsive, and beautifully designed task management appli
 ### Onboarding Flow
 ![Onboarding Screenshot](https://github.com/user-attachments/assets/05f24840-6b37-4ca3-82f5-bfe19181ca22)
 
-### Onboarding Flow
-![Dark Mode Screenshot](https://github.com/user-attachments/assets/ced9db13-00fd-4889-bbda-d7287fed37e4
+### Dark Mode
+![Dark Mode Screenshot](https://github.com/user-attachments/assets/ced9db13-00fd-4889-bbda-d7287fed37e4)
 )
 
+### Settings
+![Settings Screenshot](https://github.com/user-attachments/assets/df288fff-5296-45ba-a971-72dc6b21b015)
+
+)
 ## 🛠️ Technology Stack
 
 **Frontend:**
