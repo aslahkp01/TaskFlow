@@ -69,12 +69,32 @@ const Dashboard = () => {
         isMobile={isMobile}
         isSidebarVisible={sidebarOpen}
         toggleSidebar={setSidebarOpen} 
-        onAddTask={() => setIsFormOpen(true)}
+        onAddTask={() => {
+          setIsFormOpen(true);
+          if (isMobile) setSidebarOpen(false);
+        }}
         searchQuery={search}
         setSearchQuery={setSearch}
       />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, transition: 'margin-left 0.3s ease' }}>
+      {/* Mobile Overlay */}
+      {isMobile && sidebarOpen && (
+        <div 
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 90,
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+        />
+      )}
+
+      <div className="dashboard-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, transition: 'margin-left 0.3s ease' }}>
         
         <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center' }}>
           {!sidebarOpen && (
@@ -90,7 +110,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <main style={{ padding: '2rem', maxWidth: '800px', width: '100%', margin: '0 auto', flex: 1 }}>
+        <main className="dashboard-main" style={{ padding: '2rem', maxWidth: '800px', width: '100%', margin: '0 auto', flex: 1 }}>
           <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>Inbox</h1>
             <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-secondary)', alignItems: 'center' }}>
