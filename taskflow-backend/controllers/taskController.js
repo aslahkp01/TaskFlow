@@ -61,9 +61,19 @@ export const updateTask = async (req, res) => {
       return res.status(401).json({ message: "User not authorized" });
     }
 
+    // Prevent Mass Assignment Vulnerability by explicitly selecting allowed fields
+    const { title, description, priority, dueDate, completed } = req.body;
+    
+    const updateFields = {};
+    if (title !== undefined) updateFields.title = title;
+    if (description !== undefined) updateFields.description = description;
+    if (priority !== undefined) updateFields.priority = priority;
+    if (dueDate !== undefined) updateFields.dueDate = dueDate;
+    if (completed !== undefined) updateFields.completed = completed;
+
     const updatedTask = await Task.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateFields,
       { new: true, runValidators: true }
     );
 

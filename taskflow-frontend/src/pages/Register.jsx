@@ -1,31 +1,26 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import { LayoutList } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { register } from '../store/authSlice';
+import Logo from '../components/Logo';
 import '../index.css';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   
-  const { register } = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
     
-    const res = await register(name, email, password);
-    if (res.success) {
-      navigate('/dashboard');
-    } else {
-      setError(res.message);
+    const res = await dispatch(register({ name, email, password }));
+    if (!res.error) {
+      navigate('/verify-otp', { state: { email } });
     }
-    setLoading(false);
   };
 
   return (
@@ -41,7 +36,7 @@ const Register = () => {
       }}>
         <div style={{ marginBottom: '4rem' }}>
           <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--accent-color)', textDecoration: 'none' }}>
-            <LayoutList size={28} />
+            <Logo size={28} color="currentColor" />
             <span>TaskFlow</span>
           </Link>
         </div>

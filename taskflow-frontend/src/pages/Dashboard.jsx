@@ -1,17 +1,19 @@
-import { useState, useContext, useEffect } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { toggleTheme } from '../store/authSlice';
+import { fetchTasks } from '../store/taskSlice';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Plus, MoreHorizontal, PanelLeft } from 'lucide-react';
 import TaskForm from '../components/TaskForm';
 import TaskItem from '../components/TaskItem';
 import Sidebar from '../components/Sidebar';
+import Skeleton from '../components/Skeleton';
 
 const Dashboard = () => {
-  const { user, theme, toggleTheme } = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { user, theme } = useSelector((state) => state.auth);
+  const { tasks, loading } = useSelector((state) => state.tasks);
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
   
@@ -19,6 +21,8 @@ const Dashboard = () => {
   const [editingTask, setEditingTask] = useState(null);
   
   const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('All');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
@@ -26,7 +30,7 @@ const Dashboard = () => {
       navigate('/login');
       return;
     }
-    fetchTasks();
+    dispatch(fetchTasks({ search, status }));
 
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -37,25 +41,7 @@ const Dashboard = () => {
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [user, navigate, search]); // re-fetch when search changes
-
-
-
-  const fetchTasks = async () => {
-    try {
-      const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      const { data } = await axios.get(`${API_URL}/tasks?search=${search}`, config);
-      setTasks(data);
-    } catch (error) {
-      console.error('Error fetching tasks', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-
+  }, [user, navigate, search, status, dispatch]);
   const handleEdit = (task) => {
     setEditingTask(task);
     setIsFormOpen(true);
@@ -64,7 +50,7 @@ const Dashboard = () => {
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setEditingTask(null);
-    fetchTasks();
+    dispatch(fetchTasks({ search, status }));
   };
 
   const showNotification = (msg) => {
@@ -73,7 +59,7 @@ const Dashboard = () => {
   };
 
   const handleUpdate = () => {
-    fetchTasks();
+    dispatch(fetchTasks({ search, status }));
     showNotification("Task updated");
   };
 
@@ -98,22 +84,95 @@ const Dashboard = () => {
           )}
           <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Inbox</span>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '1rem' }}>
-            <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '1.25rem', display: 'flex', alignItems: 'center' }} onClick={toggleTheme}>
+            <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '1.25rem', display: 'flex', alignItems: 'center' }} onClick={() => dispatch(toggleTheme())}>
               {theme === 'light' ? '🌙' : '☀️'}
             </button>
           </div>
         </div>
 
         <main style={{ padding: '2rem', maxWidth: '800px', width: '100%', margin: '0 auto', flex: 1 }}>
-          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>Inbox</h1>
-            <div style={{ display: 'flex', gap: '0.5rem', color: 'var(--text-secondary)' }}>
-              <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}><MoreHorizontal size={20} /></button>
+            <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-secondary)', alignItems: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                <button 
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '0.5rem',
+                    background: 'var(--card-bg)', border: '1px solid var(--border-color)',
+                    color: 'var(--accent-color)', padding: '0.5rem 1rem', borderRadius: '8px', 
+                    fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                  Status Filter
+                </button>
+                
+                {isFilterOpen && (
+                  <div style={{
+                    position: 'absolute', top: 'calc(100% + 0.5rem)', right: 0,
+                    width: '200px', background: 'var(--card-bg)', border: '1px solid var(--border-color)',
+                    borderRadius: '12px', padding: '0.75rem', boxShadow: 'var(--shadow-lg)', zIndex: 100
+                  }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.05em', padding: '0 0.5rem' }}>
+                      Status Filter
+                    </div>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      {[
+                        { val: 'All', title: 'All Tasks' },
+                        { val: 'Pending', title: 'Pending' },
+                        { val: 'Completed', title: 'Completed' }
+                      ].map(opt => (
+                        <div 
+                          key={opt.val}
+                          onClick={() => { setStatus(opt.val); setIsFilterOpen(false); }}
+                          style={{
+                            cursor: 'pointer', padding: '0.5rem 0.75rem', borderRadius: '6px',
+                            background: status === opt.val ? 'var(--bg-secondary)' : 'transparent',
+                            transition: 'background 0.2s',
+                            fontWeight: status === opt.val ? 'bold' : '500',
+                            color: status === opt.val ? 'var(--accent-color)' : 'var(--text-primary)',
+                            fontSize: '0.875rem'
+                          }}
+                          onMouseOver={(e) => { if (status !== opt.val) e.currentTarget.style.background = 'var(--bg-secondary)'; }}
+                          onMouseOut={(e) => { if (status !== opt.val) e.currentTarget.style.background = 'transparent'; }}
+                        >
+                          {opt.title}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MoreHorizontal size={24} /></button>
             </div>
           </header>
 
+          {!loading && tasks.length > 0 && (
+            <div style={{ marginBottom: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                <span>Progress</span>
+                <span>{Math.round((tasks.filter(t => t.completed).length / tasks.length) * 100)}%</span>
+              </div>
+              <div style={{ height: '8px', background: 'var(--bg-secondary)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ 
+                  height: '100%', 
+                  background: 'var(--success-color)', 
+                  width: `${Math.round((tasks.filter(t => t.completed).length / tasks.length) * 100)}%`,
+                  transition: 'width 0.5s ease-out'
+                }} />
+              </div>
+            </div>
+          )}
+
           {loading ? (
-            <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>Loading...</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <Skeleton height="60px" />
+              <Skeleton height="60px" />
+              <Skeleton height="60px" />
+              <Skeleton height="60px" />
+            </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {isFormOpen && !editingTask && (

@@ -1,10 +1,9 @@
-import { useContext } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
 import { Edit2, Trash2, CheckCircle, Circle, Clock, AlertCircle } from 'lucide-react';
 
 const TaskItem = ({ task, onEdit, onUpdate }) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useSelector((state) => state.auth);
 
   const toggleComplete = async () => {
     try {
@@ -95,7 +94,7 @@ const TaskItem = ({ task, onEdit, onUpdate }) => {
           )}
           {task.priority && (
             <span style={{ color: getPriorityColor(task.priority), display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-               <AlertCircle size={12} /> Priority {task.priority}
+               <AlertCircle size={12} /> {task.priority}
             </span>
           )}
         </div>

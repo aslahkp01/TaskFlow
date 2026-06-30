@@ -1,11 +1,12 @@
-import { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
 import { Search, Inbox, Plus, Bell, PanelLeft, Settings as SettingsIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { logout } from '../store/authSlice';
 
 const Sidebar = ({ isMobile, isSidebarVisible, toggleSidebar, onAddTask, searchQuery, setSearchQuery }) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   if (!isMobile && !isSidebarVisible) {
     return null; // Or render a collapsed version
@@ -114,8 +115,8 @@ const Sidebar = ({ isMobile, isSidebarVisible, toggleSidebar, onAddTask, searchQ
           </button>
           
          <button onClick={() => {
-           localStorage.removeItem('userInfo');
-           window.location.href = '/login';
+           dispatch(logout());
+           navigate('/login');
          }} style={{ 
            display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0.75rem', 
            borderRadius: '8px', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--danger-color)',

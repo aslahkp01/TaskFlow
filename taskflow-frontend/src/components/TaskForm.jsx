@@ -1,13 +1,14 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
+import { useSelector } from 'react-redux';
 import { X } from 'lucide-react';
 
 const TaskForm = ({ task, onClose }) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useSelector((state) => state.auth);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('Medium');
+  const [isPriorityOpen, setIsPriorityOpen] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -93,12 +94,41 @@ const TaskForm = ({ task, onClose }) => {
             <input type="date" id="dueDate" value={dueDate} onChange={(e) => setDueDate(e.target.value)} style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '0.75rem', color: 'var(--text-secondary)', padding: 0 }} />
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '0.25rem 0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            <select value={priority} onChange={(e) => setPriority(e.target.value)} style={{ border: 'none', background: 'transparent', outline: 'none', color: 'var(--text-secondary)' }}>
-              <option value="Low">Priority 3</option>
-              <option value="Medium">Priority 2</option>
-              <option value="High">Priority 1</option>
-            </select>
+          <div style={{ position: 'relative' }}>
+            <button 
+              type="button"
+              onClick={() => setIsPriorityOpen(!isPriorityOpen)}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '0.25rem 0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', background: 'transparent', cursor: 'pointer' }}
+            >
+              Priority: {priority}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            
+            {isPriorityOpen && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, marginTop: '0.25rem',
+                width: '120px', background: 'var(--card-bg)', border: '1px solid var(--border-color)',
+                borderRadius: '8px', padding: '0.25rem', boxShadow: 'var(--shadow-md)', zIndex: 100
+              }}>
+                {['High', 'Medium', 'Low'].map(opt => (
+                  <div 
+                    key={opt}
+                    onClick={() => { setPriority(opt); setIsPriorityOpen(false); }}
+                    style={{
+                      cursor: 'pointer', padding: '0.5rem', borderRadius: '4px',
+                      background: priority === opt ? 'var(--accent-color)' : 'transparent',
+                      color: priority === opt ? 'white' : 'var(--text-primary)',
+                      fontSize: '0.75rem',
+                      transition: 'background 0.2s'
+                    }}
+                    onMouseOver={(e) => { if (priority !== opt) e.currentTarget.style.background = 'var(--bg-secondary)'; }}
+                    onMouseOut={(e) => { if (priority !== opt) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    {opt}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         
