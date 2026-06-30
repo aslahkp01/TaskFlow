@@ -15,12 +15,13 @@ const Sidebar = ({ isMobile, isSidebarVisible, toggleSidebar, onAddTask, searchQ
   return (
     <div className={`sidebar ${isMobile && isSidebarVisible ? 'mobile-open' : ''}`} style={{
       width: '280px',
-      height: '100vh',
+      height: '100dvh', // Use dynamic viewport height for mobile
       backgroundColor: 'var(--bg-secondary)',
       borderRight: '1px solid var(--border-color)',
       display: 'flex',
       flexDirection: 'column',
       padding: '1rem',
+      paddingBottom: isMobile ? '5rem' : '1rem', // Extra padding on mobile to clear nav bars
       position: isMobile ? 'fixed' : 'sticky',
       top: 0,
       left: isMobile ? (isSidebarVisible ? '0' : '-100%') : '0',
@@ -115,8 +116,10 @@ const Sidebar = ({ isMobile, isSidebarVisible, toggleSidebar, onAddTask, searchQ
           </button>
           
          <button onClick={() => {
-           dispatch(logout());
-           navigate('/login');
+           if (window.confirm("Are you sure you want to log out?")) {
+             dispatch(logout());
+             navigate('/login');
+           }
          }} style={{ 
            display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0.75rem', 
            borderRadius: '8px', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--danger-color)',
