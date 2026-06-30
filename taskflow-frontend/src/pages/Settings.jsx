@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile, toggleTheme, exportData, deleteAccount, logout } from '../store/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Upload, Sun, Moon, Download, Trash2 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import Sidebar from '../components/Sidebar';
 
 const Settings = () => {
@@ -57,19 +59,38 @@ const Settings = () => {
     setLoading(true);
     const res = await dispatch(exportData());
     if (!res.error) {
-      const jsonStr = JSON.stringify(res.payload, null, 2);
-      const blob = new Blob([jsonStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text('Your TaskFlow Tasks', 14, 22);
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Exported on ${new Date().toLocaleDateString()}`, 14, 30);
       
-      const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.setAttribute("href", url);
-      downloadAnchorNode.setAttribute("download", "taskflow_export.json");
-      document.body.appendChild(downloadAnchorNode);
-      downloadAnchorNode.click();
-      downloadAnchorNode.remove();
-      URL.revokeObjectURL(url);
+      const tableColumn = ["Title", "Status", "Priority", "Due Date"];
+      const tableRows = [];
+
+      res.payload.tasks.forEach(task => {
+        const rowData = [
+          task.title,
+          task.completed ? 'Completed' : 'Pending',
+          task.priority || 'Medium',
+          task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'
+        ];
+        tableRows.push(rowData);
+      });
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 40,
+        theme: 'grid',
+        styles: { fontSize: 10, cellPadding: 3 },
+        headStyles: { fillColor: [0, 82, 204] }
+      });
+
+      doc.save('taskflow_tasks.pdf');
       
-      setMessage({ text: 'Data exported successfully!', type: 'success' });
+      setMessage({ text: 'Tasks exported as PDF successfully!', type: 'success' });
     } else {
       setMessage({ text: res.payload || 'Export failed', type: 'error' });
     }
