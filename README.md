@@ -1,6 +1,6 @@
 # TaskFlow
 
-![TaskFlow Header]([https://via.placeholder.com/1200x300?text=TaskFlow+-+Clarity,+finally.](https://drive.google.com/file/d/1VJ8fbuoHepdwne4lsF5eJvqtKHhg3eo3/view?usp=drive_link))
+![TaskFlow Header]()<img width="133" height="138" alt="Screenshot 2026-06-30 120759" src="https://github.com/user-attachments/assets/66f875b5-14d5-4a02-88ae-d9151e668752" />
 
 TaskFlow is a modern, responsive, and beautifully designed task management application built with the MERN stack. It acts as an extension of your mind, allowing you to capture, organize, and manage tasks instantly using a simple and flowing interface.
 
@@ -18,16 +18,20 @@ TaskFlow is a modern, responsive, and beautifully designed task management appli
 *(Replace the placeholder image paths below with actual screenshots of your application)*
 
 ### Landing Page
-![Landing Page Screenshot](https://via.placeholder.com/800x400?text=Landing+Page+Screenshot)
+![Landing Page Screenshot](<img width="1518" height="742" alt="Screenshot 2026-06-30 141715" src="https://github.com/user-attachments/assets/157a8777-9113-4199-8a62-4359dbfd4082" />
+)
 
 ### User Dashboard
-![Dashboard Screenshot](https://via.placeholder.com/800x400?text=Dashboard+Screenshot)
+![Dashboard Screenshot](<img width="1525" height="720" alt="Screenshot 2026-06-30 142101" src="https://github.com/user-attachments/assets/137af889-2be3-427e-9c3a-e091111c65ca" />
+)
 
 ### Task Creation & Prioritization
-![Task Form Screenshot](https://via.placeholder.com/800x400?text=Task+Form+Screenshot)
+![Task Form Screenshot](<img width="1522" height="726" alt="Screenshot 2026-06-30 143046" src="https://github.com/user-attachments/assets/e233a5fe-49ed-480d-8808-e4f596dd8c10" />
+)
 
 ### Onboarding Flow
-![Onboarding Screenshot](https://via.placeholder.com/800x400?text=Onboarding+Screenshot)
+![Onboarding Screenshot](<img width="1536" height="741" alt="Screenshot 2026-06-30 141817" src="https://github.com/user-attachments/assets/8ee4f1e2-acfb-4e8b-bcbe-1b2d25489f88" />
+)
 
 ## 🛠️ Technology Stack
 
