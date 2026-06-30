@@ -19,7 +19,11 @@ const Register = () => {
     
     const res = await dispatch(register({ name, email, password }));
     if (!res.error) {
-      navigate('/verify-otp', { state: { email } });
+      if (res.payload.requiresOtp) {
+        navigate('/verify-otp', { state: { email } });
+      } else {
+        navigate('/onboarding');
+      }
     }
   };
 

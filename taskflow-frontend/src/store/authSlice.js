@@ -22,6 +22,9 @@ export const register = createAsyncThunk(
   async ({ name, email, password }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(`${API_URL}/auth/register`, { name, email, password });
+      if (!data.requiresOtp) {
+        localStorage.setItem('userInfo', JSON.stringify(data));
+      }
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Registration failed');
@@ -125,9 +128,11 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(register.fulfilled, (state) => {
+      .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
-        // Do not set user here, we need OTP verification
+        if (!action.payload.requiresOtp) {
+          state.user = action.payload;
+        }
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;

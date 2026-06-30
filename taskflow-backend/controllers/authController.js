@@ -25,36 +25,59 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const hashedOtp = await bcrypt.hash(otp, salt);
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+    const enableOtp = process.env.ENABLE_OTP === 'true';
 
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      otp: hashedOtp,
-      otpExpires
-    });
+    if (enableOtp) {
+      // Generate 6-digit OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const hashedOtp = await bcrypt.hash(otp, salt);
+      const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
-    try {
-      const message = `Your TaskFlow verification code is: ${otp}\nThis code is valid for 10 minutes.`;
-      await sendEmail({
+      const user = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        otp: hashedOtp,
+        otpExpires,
+        isVerified: false
+      });
+
+      try {
+        const message = `Your TaskFlow verification code is: ${otp}\nThis code is valid for 10 minutes.`;
+        await sendEmail({
+          email: user.email,
+          subject: 'TaskFlow - Email Verification',
+          message
+        });
+
+        return res.status(201).json({
+          message: "Registration successful. Please check your email for the verification code.",
+          email: user.email,
+          requiresOtp: true
+        });
+      } catch (emailError) {
+        await User.findByIdAndDelete(user._id);
+        console.error("EMAIL ERROR:", emailError);
+        return res.status(500).json({ message: "Failed to send email: " + emailError.message });
+      }
+    } else {
+      // Direct signup without OTP
+      const user = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        isVerified: true
+      });
+
+      return res.status(201).json({
+        _id: user._id,
+        name: user.name,
         email: user.email,
-        subject: 'TaskFlow - Email Verification',
-        message
+        onboarded: user.onboarded,
+        profilePhoto: user.profilePhoto,
+        token: generateToken(user._id),
+        requiresOtp: false
       });
-
-      res.status(201).json({
-        message: "Registration successful. Please check your email for the verification code.",
-        email: user.email
-      });
-    } catch (emailError) {
-      // If email fails, we might want to delete the user or just return an error
-      await User.findByIdAndDelete(user._id);
-      console.error("EMAIL ERROR:", emailError);
-      return res.status(500).json({ message: "Failed to send email: " + emailError.message });
     }
 
   } catch (error) {
