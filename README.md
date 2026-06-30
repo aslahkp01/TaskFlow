@@ -30,12 +30,16 @@ TaskFlow is a modern, responsive, and beautifully designed task management appli
 
 ### Dark Mode
 ![Dark Mode Screenshot](https://github.com/user-attachments/assets/ced9db13-00fd-4889-bbda-d7287fed37e4)
-)
+
 
 ### Settings
 ![Settings Screenshot](https://github.com/user-attachments/assets/df288fff-5296-45ba-a971-72dc6b21b015)
 
+### OTP Verfication
+![OTP Verfication Screenshot](https://github.com/user-attachments/assets/8cdfec23-e583-4703-8af0-23cd6cc9526b" 
 )
+
+
 ## 🛠️ Technology Stack
 
 **Frontend:**
