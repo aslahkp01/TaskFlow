@@ -53,7 +53,8 @@ export const registerUser = async (req, res) => {
     } catch (emailError) {
       // If email fails, we might want to delete the user or just return an error
       await User.findByIdAndDelete(user._id);
-      return res.status(500).json({ message: "Failed to send verification email. Please try again." });
+      console.error("EMAIL ERROR:", emailError);
+      return res.status(500).json({ message: "Failed to send email: " + emailError.message });
     }
 
   } catch (error) {
@@ -203,13 +204,18 @@ export const resendOtp = async (req, res) => {
     await user.save();
 
     const message = `Your new TaskFlow verification code is: ${otp}\nThis code is valid for 10 minutes.`;
-    await sendEmail({
-      email: user.email,
-      subject: 'TaskFlow - Email Verification',
-      message
-    });
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'TaskFlow - Email Verification',
+        message
+      });
+      res.json({ message: "Verification code resent" });
+    } catch (emailError) {
+      console.error("RESEND EMAIL ERROR:", emailError);
+      res.status(500).json({ message: "Failed to resend email: " + emailError.message });
+    }
 
-    res.json({ message: "Verification code resent" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
