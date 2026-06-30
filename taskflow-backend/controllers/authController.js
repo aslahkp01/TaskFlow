@@ -1,4 +1,5 @@
 import User from "../models/user.js";
+import Task from "../models/task.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sendEmail from "../utils/sendEmail.js";
@@ -239,6 +240,37 @@ export const resendOtp = async (req, res) => {
       res.status(500).json({ message: "Failed to resend email: " + emailError.message });
     }
 
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const exportData = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password -otp');
+    const tasks = await Task.find({ user: req.user._id });
+    
+    res.json({
+      user,
+      tasks,
+      exportDate: new Date()
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteAccount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    await Task.deleteMany({ user: req.user._id });
+    await User.findByIdAndDelete(req.user._id);
+    
+    res.json({ message: "Account deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
