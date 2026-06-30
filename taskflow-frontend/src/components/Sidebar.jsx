@@ -21,7 +21,6 @@ const Sidebar = ({ isMobile, isSidebarVisible, toggleSidebar, onAddTask, searchQ
       display: 'flex',
       flexDirection: 'column',
       padding: '1rem',
-      paddingBottom: isMobile ? '5rem' : '1rem', // Extra padding on mobile to clear nav bars
       position: isMobile ? 'fixed' : 'sticky',
       top: 0,
       left: isMobile ? (isSidebarVisible ? '0' : '-100%') : '0',
