@@ -17,7 +17,7 @@ export const getTasks = async (req, res) => {
       query.title = { $regex: search, $options: 'i' };
     }
 
-    const tasks = await Task.find(query).sort({ createdAt: -1 });
+    const tasks = await Task.find(query).sort({ dueDate: 1 });
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ message: error.message });
